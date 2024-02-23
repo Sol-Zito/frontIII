@@ -1,37 +1,44 @@
-import { Inter, Raleway } from "next/font/google";
-import { useEffect, useState } from "react";
-import { Character } from "@/interface";
-import Image from "next/image";
+import { Raleway } from "next/font/google";
+import { Character } from "@/interface/character";
+import Card from "@/component/common/card/card";
+import Layout from "@/component/layout/Layout";
+import { GetStaticProps, NextPage } from "next";
+import { getCharacters } from "@/services/getCharacters";
 
 // const inter = Inter({ subsets: ["latin"] });
 const raleway = Raleway({ subsets: ["latin"] });
 
-export default function Home() {
-  const [character, setCharacter] = useState<Character[]>([]);
-
-  const getCharacter = async () => {
-    const response = await fetch("https://amiiboapi.com/api/amiibo/ ");
-    const data = await response.json();
-    return data.amiibo.slice(0, 20);
-  };
-
-  useEffect(() => {
-    getCharacter().then((data) => setCharacter(data));
-  }, []);
-
-  return (
-    <main
-      className={`flex min-h-screen flex-col items-center justify-between p-24 ${raleway.className}`}
-    >
-      <h1>Ecommerce</h1>
-      <section className="grid grid-cols-4 gap-7 mt-4">
-        {character.map((item) => (
-          <div key={item.tail} className="col-sapn-1">
-            <p>{item.name}</p>
-            <Image src={item.image} alt={item.character} />
-          </div>
-        ))}
-      </section>
-    </main>
-  );
+interface HomePageProps {
+  characters: Character[];
 }
+// export default function Home({ characters }) {
+const Home: NextPage<HomePageProps> = ({ characters }) => {
+  return (
+    <Layout
+      title="Ecommerce DH"
+      description="Consigue todas la figuras coleccionables que necesitas"
+      keywoards="figuras, abimes. videojueo, comic, smash"
+    >
+      <div
+        className={`flex min-h-screen flex-col items-center justify-between p-24 ${raleway.className}`}
+      >
+        <h1>Ecommerce</h1>
+        <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 px-4 md:px-0">
+          {characters.map((item) => (
+            <Card character={item} />
+          ))}
+        </section>
+      </div>
+    </Layout>
+  );
+};
+export default Home;
+
+export const getStaticProps: GetStaticProps = async () => {
+  const characters = await getCharacters();
+  return {
+    props: {
+      characters,
+    },
+  };
+};
