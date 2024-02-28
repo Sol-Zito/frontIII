@@ -9,7 +9,7 @@ export interface Character {
   head: string;
   image: string;
   name: string;
-  release: string;
+  release: any;
   tail: string;
   type: string;
 }
